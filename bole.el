@@ -26,11 +26,7 @@ Set it to `ignore' if you want to silence errors."
   :type 'function
   :group 'bole)
 
-(defcustom bole-key-event-list (list
-                                (bole-key-event :pred (lambda () t)
-                                                :action (lambda ()
-                                                          (message "run")))
-                                )
+(defcustom bole-key-event-list '(bole-button-key-event)
   "A list of `bole-key-event'."
   :type '(repeat bole-key-event)
   :group 'bole)
@@ -48,13 +44,13 @@ Set it to `ignore' if you want to silence errors."
 
 (defun bole-key-execute (assist)
   "Evaluate Action Key form (or Assist Key form with ASSIST non-nil)."
-  (cl-loop for ev in bole-key-event-list
+  (cl-loop for ev in (mapcar #'symbol-value bole-key-event-list)
            when (funcall (bole-key-event-pred ev))
            return (funcall (bole-key-event-action ev) assist)))
 
 (defun bole-key-execute-with-callback (cb)
   "Call CB with the active `bole-key-event'."
-  (cl-loop for ev in bole-key-event-list
+  (cl-loop for ev in (mapcar #'symbol-value bole-key-event-list)
            when (funcall (bole-key-event-pred ev))
            return (funcall cb ev)))
 
@@ -108,5 +104,32 @@ the `bole-assist-key-default-function' variable is run."
        (princ "WILL ")
        (princ (bole-key-event-action ev))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; All supported modules listed below ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Handle Emacs push buttons in buffers
+(defun bole--button-active ()
+  "Check whether the button is available at point."
+  (button-at (point)))
+
+(defun bole--button-event (assist)
+  "Perform the action specified by a button at point.
+Or show the help with non-nil ASSIST."
+  (if (not assist)
+      (push-button)
+    (let* ((button (button-at (point)))
+           (action (button-get button 'action))
+           ;; Ensure these don't invoke with-output-to-temp-buffer a second time
+           (temp-buffer-show-hook)
+           (temp-buffer-show-function))
+      (if (functionp action)
+          (describe-function action)
+        (with-help-window
+            (print (format "Button's action is: '%s'" action)))))))
+
+(defvar bole-button-key-event
+  (bole-key-event :pred #'bole--button-active
+                  :action #'bole--button-event))
 (provide 'bole)
 ;;; bole.el ends here
