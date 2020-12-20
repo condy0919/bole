@@ -98,11 +98,12 @@ the `bole-assist-key-default-function' variable is run."
   (bole-key-execute-with-callback
    (lambda (ev)
      (with-output-to-temp-buffer bole-help-buffer-name
-       (princ "WHEN ")
-       (princ (bole-key-event-pred ev))
-       (terpri)
-       (princ "WILL ")
-       (princ (bole-key-event-action ev))))))
+       (let ((pred (bole-key-event-pred ev))
+             (action (bole-key-event-action ev)))
+         (print (format "WHEN (%s)" pred))
+         (print (format "WILL (%s)" action))
+         (terpri)
+         (print (documentation action)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; All supported modules listed below ;;
