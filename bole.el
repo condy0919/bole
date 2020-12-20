@@ -26,7 +26,7 @@ Set it to `ignore' if you want to silence errors."
   :type 'function
   :group 'bole)
 
-(defcustom bole-key-event-list '(bole-button-key-event)
+(defcustom bole-key-event-list '(bole-builtin-button-key-event)
   "A list of `bole-key-event'."
   :type '(repeat bole-key-event)
   :group 'bole)
@@ -108,12 +108,12 @@ the `bole-assist-key-default-function' variable is run."
 ;; All supported modules listed below ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Handle Emacs push buttons in buffers
-(defun bole--button-active ()
+;; Handle Emacs builtin push buttons in buffers
+(defun bole-builtin-button-active ()
   "Check whether the button is available at point."
   (button-at (point)))
 
-(defun bole--button-event (assist)
+(defun bole-builtin-button-event (assist)
   "Perform the action specified by a button at point.
 Or show the help with non-nil ASSIST."
   (if (not assist)
@@ -128,8 +128,8 @@ Or show the help with non-nil ASSIST."
         (with-help-window
             (print (format "Button's action is: '%s'" action)))))))
 
-(defvar bole-button-key-event
-  (bole-key-event :pred #'bole--button-active
-                  :action #'bole--button-event))
+(defvar bole-builtin-button-key-event
+  (bole-key-event :pred #'bole-builtin-button-active
+                  :action #'bole-builtin-button-event))
 (provide 'bole)
 ;;; bole.el ends here
