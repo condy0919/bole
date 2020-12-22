@@ -26,7 +26,8 @@ Set it to `ignore' if you want to silence errors."
   :type 'function
   :group 'bole)
 
-(defcustom bole-key-event-list '(bole-builtin-button-key-event)
+(defcustom bole-key-event-list '(bole-builtin-button-key-event
+                                 bole-xref-key-event)
   "A list of `bole-key-event'."
   :type '(repeat bole-key-event)
   :group 'bole)
@@ -132,5 +133,25 @@ Or show the help with non-nil ASSIST."
 (defvar bole-builtin-button-key-event
   (bole-key-event :pred #'bole-builtin-button-active
                   :action #'bole-builtin-button-event))
+
+;; XRef
+(autoload 'xref--item-at-point "xref")
+(autoload 'xref-show-location-at-point "xref")
+(autoload 'xref-goto-xref "xref")
+
+(defun bole-xref-event (assist)
+  "Jump to the xref on the current line.
+Or display the source of xref at point with non-nil ASSIST."
+  (if assist
+      (xref-show-location-at-point)
+    (xref-goto-xref)))
+
+(defvar bole-xref-key-event
+  (bole-key-event :pred #'xref--item-at-point
+                  :action #'bole-xref-event))
+
+;; (evil-collection-define-key nil 'global-map
+;;   (kbd "M-RET") 'bole-key-either)
+
 (provide 'bole)
 ;;; bole.el ends here
