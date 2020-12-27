@@ -8,6 +8,9 @@
 (require 'eieio)
 (require 'cl-lib)
 
+(require 'bole-button)
+
+
 (defgroup bole nil
   "The minimal hyperbole without hyper."
   :prefix "bole-"
@@ -28,6 +31,8 @@ Set it to `ignore' if you want to silence errors."
 
 (defcustom bole-key-event-list '(bole-builtin-button-key-event
                                  bole-xref-key-event)
+                                 ;; hyperbole button
+                                 ;; select or select-and-kill a markup pair
   "A list of `bole-key-event'."
   :type '(repeat bole-key-event)
   :group 'bole)
@@ -106,9 +111,9 @@ the `bole-assist-key-default-function' variable is run."
          (terpri)
          (print (documentation action)))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; All supported modules listed below ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ========================================================================
+;;; All supported modules listed below
+;;; ========================================================================
 
 ;; Handle Emacs builtin push buttons in buffers
 (defun bole-builtin-button-active ()
@@ -149,6 +154,10 @@ Or display the source of xref at point with non-nil ASSIST."
 (defvar bole-xref-key-event
   (bole-key-event :pred #'xref--item-at-point
                   :action #'bole-xref-event))
+
+;; ((hbut:at-p)
+;;   (hui:hbut-act 'hbut:current)
+;;   hui:hbut-help 'hbut:current)
 
 ;; (evil-collection-define-key nil 'global-map
 ;;   (kbd "M-RET") 'bole-key-either)
